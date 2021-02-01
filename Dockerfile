@@ -1,8 +1,8 @@
 # runc
-FROM golang:1.14-alpine3.12 AS runc
+FROM i386/alpine AS runc
 ARG RUNC_VERSION=v1.0.0-rc92
 RUN set -eux; \
-	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev make git bash; \
+	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev make git bash go; \
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
 	cd src/github.com/opencontainers/runc; \
 	make static BUILDTAGS='seccomp selinux ambient'; \
@@ -13,8 +13,8 @@ RUN set -eux; \
 
 
 # podman build base
-FROM golang:1.14-alpine3.12 AS podmanbuildbase
-RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
+FROM i386/alpine AS podmanbuildbase
+RUN apk add --update --no-cache git make gcc pkgconf musl-dev go\
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
 	libseccomp-dev libselinux-dev ostree-dev openssl iptables bash \
@@ -108,7 +108,7 @@ RUN set -ex; \
 
 
 # Download gpg
-FROM alpine:3.12 AS gpg
+FROM i386/alpine AS gpg
 RUN apk add --no-cache gnupg
 
 # Download gosu and crun
@@ -124,7 +124,7 @@ RUN set -ex; \
 
 
 # Build podman base image
-FROM alpine:3.12 AS podmanbase
+FROM i386/alpine AS podmanbase
 LABEL maintainer="Max Goltzsche <max.goltzsche@gmail.com>"
 RUN apk add --no-cache tzdata ca-certificates
 COPY --from=gosu /usr/local/bin/gosu /usr/local/bin/gosu
