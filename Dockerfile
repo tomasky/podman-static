@@ -26,7 +26,7 @@ RUN git clone https://github.com/bats-core/bats-core.git && cd bats-core && ./in
 FROM podmanbuildbase AS podman
 RUN apk add --update --no-cache tzdata curl
 ARG PODMAN_VERSION=v2.2.1
-RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman src/github.com/containers/podman
+RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman /root/go/src/github.com/containers/podman
 WORKDIR /root/go/src/github.com/containers/podman
 RUN make install.tools
 RUN set -ex; \
