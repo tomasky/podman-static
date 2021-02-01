@@ -27,7 +27,7 @@ jobs:
       run:  make podman podman-minimal podman-remote 
 
     - name: Build signed archive
-      run: make signed-tar
+      run: make tar
      
       env:
         GPG_SIGN_KEY: ${{ secrets.GPG_SIGN_KEY }}
