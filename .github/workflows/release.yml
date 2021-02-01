@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build & Test
-      run:  make podman podman-minimal podman-remote test
+      run:  make podman podman-minimal podman-remote 
 
     - name: Build signed archive
       run: make signed-tar
