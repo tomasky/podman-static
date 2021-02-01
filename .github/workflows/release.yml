@@ -24,14 +24,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build & Test
-      uses: paulproteus/ubuntu-18.04-x86@0.1
-      with: 
-        command:   apt update -y && apt install docker.io   -y &&  rm -rf /var/lib/docker-desktop/ &&   service docker start && make podman podman-minimal podman-remote test
+      run:  make podman podman-minimal podman-remote test
 
     - name: Build signed archive
-      uses: paulproteus/ubuntu-18.04-x86@0.1
-      with: 
-        command: make signed-tar
+      run: make signed-tar
      
       env:
         GPG_SIGN_KEY: ${{ secrets.GPG_SIGN_KEY }}
