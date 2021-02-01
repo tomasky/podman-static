@@ -39,39 +39,6 @@ jobs:
     - name: Log into DockerHub registry
       run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login docker.io -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-    - name: Push image
-      run: |
-        set -eu
-
-        GITHUB_IMAGE_REPO=docker.pkg.github.com/${{ github.repository }}/podman
-        GITHUB_IMAGE_REPO=$(echo $GITHUB_IMAGE_REPO | tr '[A-Z]' '[a-z]')
-        DOCKERHUB_IMAGE_REPO=docker.io/mgoltzsche/podman
-
-        # Strip git ref prefix from version
-        TAGS=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-        # Strip "v" prefix from tag name
-        [[ "${{ github.ref }}" == "refs/tags/"* ]] && TAGS=$(echo $TAGS | sed -e 's/^v//')
-        # Expand tags: 1.2.3 -> 1 1.2 1.2.3
-        TAGS="$(echo "$TAGS" | sed -E -e 's/^((([0-9]+)\.[0-9]+)\.[0-9]+)$/\3 \2 \1/')"
-
-        for IMAGE in $PODMAN_REMOTE_IMAGE $PODMAN_IMAGE $PODMAN_MINIMAL_IMAGE; do
-          TAG_SUFFIX=$(echo $IMAGE | sed -E -e 's/^([^-]+)//')
-          LATEST_TAG="$([ "$TAG_SUFFIX" ] && echo $TAG_SUFFIX | sed -E -e 's/^-//' || echo latest)"
-          [ "$TAGS" == "master" ] && IMAGE_TAGS="$LATEST_TAG" || IMAGE_TAGS="$LATEST_TAG $TAGS"
-          for TAG in $IMAGE_TAGS; do
-            [ "$TAG" = "$LATEST_TAG" ] || TAG="${TAG}${TAG_SUFFIX}"
-
-            # Push to DockerHub
-            echo Push $DOCKERHUB_IMAGE_REPO:$TAG
-            docker tag $IMAGE $DOCKERHUB_IMAGE_REPO:$TAG
-            docker push $DOCKERHUB_IMAGE_REPO:$TAG
-
-            # Push to GitHub registry
-            echo Push $GITHUB_IMAGE_REPO:$TAG
-            docker tag $IMAGE $GITHUB_IMAGE_REPO:$TAG
-            docker push $GITHUB_IMAGE_REPO:$TAG
-          done
-        done
 
     - name: Create Release
       if: github.ref != 'refs/heads/master'
