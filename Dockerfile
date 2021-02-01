@@ -80,7 +80,9 @@ WORKDIR /slirp4netns
 RUN set -ex; \
 	./autogen.sh; \
 	LDFLAGS=-static ./configure --prefix=/usr; \
-	make
+	git clone https://github.com/seccomp/libseccomp ../../seccomp/libseccomp;\
+	cd ../../seccomp/libseccomp && git checkout --detach $(LIBSECCOMP_COMMIT) && ./autogen.sh && ./configure --prefix=/usr && make all && make install;\
+	cd /slirp4netns ; make
 
 
 # fuse-overlayfs (derived from https://github.com/containers/fuse-overlayfs/blob/master/Dockerfile.static)
