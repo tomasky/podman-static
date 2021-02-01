@@ -2,7 +2,7 @@
 FROM i386/alpine AS runc
 ARG RUNC_VERSION=v1.0.0-rc92
 RUN set -eux; \
-	apk add --no-cache --virtual .build-deps gcc musl-dev  make git   bash go; \
+	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev  make git   bash go; \
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
 	cd src/github.com/opencontainers/runc; \
 	make static BUILDTAGS=' selinux ambient'; \
