@@ -5,7 +5,7 @@ RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev make git bash go; \
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
 	cd src/github.com/opencontainers/runc; \
-	make static BUILDTAGS='seccomp selinux ambient'; \
+	make static BUILDTAGS=' selinux ambient'; \
 	mv runc /usr/local/bin/runc; \
 	rm -rf $GOPATH/src/github.com/opencontainers/runc; \
 	apk del --purge .build-deps; \
@@ -30,7 +30,7 @@ RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman sr
 WORKDIR $GOPATH/src/github.com/containers/podman
 RUN make install.tools
 RUN set -ex; \
-	make bin/podman LDFLAGS_PODMAN="-s -w -extldflags '-static'" BUILDTAGS='seccomp selinux apparmor exclude_graphdriver_devicemapper containers_image_ostree_stub containers_image_openpgp'; \
+	make bin/podman LDFLAGS_PODMAN="-s -w -extldflags '-static'" BUILDTAGS=' selinux apparmor exclude_graphdriver_devicemapper containers_image_ostree_stub containers_image_openpgp'; \
 	mv bin/podman /usr/local/bin/podman; \
 	podman --help >/dev/null; \
 	[ "$(ldd /usr/local/bin/podman | wc -l)" -eq 0 ] || (ldd /usr/local/bin/podman; false)
