@@ -73,7 +73,7 @@ tar: .podman-from-container
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/cni $(BUILD_DIR)/usr/libexec/cni; \
 	$(DOCKER) rm $$CONTAINER
 
-signed-tar: tar .gpg
+signed-tar: tar #.gpg
 	@echo Running gpg signing container with GPG_SIGN_KEY and GPG_SIGN_KEY_PASSPHRASE
 	export GPG_SIGN_KEY
 	export GPG_SIGN_KEY_PASSPHRASE
