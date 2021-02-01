@@ -64,7 +64,7 @@ RUN set -ex; \
 # slirp4netns
 FROM podmanbuildbase AS slirp4netns
 WORKDIR /
-RUN apk add --update --no-cache autoconf automake meson ninja linux-headers libcap-static libcap-dev autoconf automake libtool gperf
+RUN apk add --update --no-cache autoconf automake meson ninja linux-headers libcap-static libcap-dev autoconf automake libtool gperf file
 # Build libslirp
 ARG LIBSLIRP_VERSION=v4.4.0
 RUN git clone --branch=${LIBSLIRP_VERSION} https://gitlab.freedesktop.org/slirp/libslirp.git
