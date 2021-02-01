@@ -30,6 +30,7 @@ RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman /r
 WORKDIR /root/go/src/github.com/containers/podman
 RUN make install.tools
 RUN set -ex; \
+	make install.libseccomp.sudo ;\
 	make bin/podman LDFLAGS_PODMAN="-s -w -extldflags '-static'" BUILDTAGS=' selinux apparmor exclude_graphdriver_devicemapper containers_image_ostree_stub containers_image_openpgp'; \
 	mv bin/podman /usr/local/bin/podman; \
 	podman --help >/dev/null; \
