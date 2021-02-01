@@ -3,9 +3,9 @@ FROM i386/alpine AS runc
 ARG RUNC_VERSION=v1.0.0-rc92
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev autoconf automake libtool make git bash go; \
-	git clone https://github.com/seccomp/libseccomp ../../seccomp/libseccomp;\
-	cd ../../seccomp/libseccomp && git checkout --detach $(LIBSECCOMP_COMMIT) && ./autogen.sh && ./configure --prefix=/usr && make all && make install;\
-	cd /root/go;\
+	git clone https://github.com/seccomp/libseccomp seccomp/libseccomp;\
+	cd seccomp/libseccomp && git checkout --detach $(LIBSECCOMP_COMMIT) && ./autogen.sh && ./configure --prefix=/usr && make all && make install;\
+	cd ../../;\ 
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
 	cd src/github.com/opencontainers/runc; \
 	make static BUILDTAGS='seccomp selinux ambient'; \
