@@ -7,7 +7,7 @@ RUN set -eux; \
 	cd src/github.com/opencontainers/runc; \
 	make static BUILDTAGS=' selinux ambient'; \
 	mv runc /usr/local/bin/runc; \
-	rm -rf $GOPATH/src/github.com/opencontainers/runc; \
+	rm -rf /root/go/src/github.com/opencontainers/runc; \
 	apk del --purge .build-deps; \
 	[ "$(ldd /usr/local/bin/runc | wc -l)" -eq 0 ] || (ldd /usr/local/bin/runc; false)
 
@@ -27,7 +27,7 @@ FROM podmanbuildbase AS podman
 RUN apk add --update --no-cache tzdata curl
 ARG PODMAN_VERSION=v2.2.1
 RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman src/github.com/containers/podman
-WORKDIR $GOPATH/src/github.com/containers/podman
+WORKDIR /root/go/src/github.com/containers/podman
 RUN make install.tools
 RUN set -ex; \
 	make bin/podman LDFLAGS_PODMAN="-s -w -extldflags '-static'" BUILDTAGS=' selinux apparmor exclude_graphdriver_devicemapper containers_image_ostree_stub containers_image_openpgp'; \
