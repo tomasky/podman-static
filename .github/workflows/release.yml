@@ -26,7 +26,7 @@ jobs:
     - name: Build & Test
       uses: paulproteus/ubuntu-18.04-x86@0.1
       with: 
-        command:   apt update -y && apt install docker.io   -y &&    service docker start && make podman podman-minimal podman-remote test
+        command:   apt update -y && apt install docker.io   -y &&    service dockerd start && make podman podman-minimal podman-remote test
 
     - name: Build signed archive
       uses: paulproteus/ubuntu-18.04-x86@0.1
