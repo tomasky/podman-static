@@ -25,7 +25,7 @@ RUN git clone https://github.com/bats-core/bats-core.git && cd bats-core && ./in
 # podman (without systemd support)
 FROM podmanbuildbase AS podman
 RUN apk add --update --no-cache tzdata curl autoconf automake libtool
-ARG PODMAN_VERSION=v2.2.1
+ARG PODMAN_VERSION=v3.0.0-rc2
 RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman /root/go/src/github.com/containers/podman
 WORKDIR /root/go/src/github.com/containers/podman
 RUN make install.tools
