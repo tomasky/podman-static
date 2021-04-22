@@ -27,7 +27,7 @@ jobs:
       run:  make podman podman-minimal podman-remote 
 
     - name: Build signed archive
-      run: make tar
+      run: make tar tar2
      
       env:
         GPG_SIGN_KEY: ${{ secrets.GPG_SIGN_KEY }}
@@ -52,8 +52,19 @@ jobs:
         draft: false
         prerelease: true
 
-
-    - name: Upload Archive
+    - name: Upload x86 binary
+      if: github.ref != 'refs/heads/master'
+      id: upload-archive2
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./build/podman-linux-x86.tar.gz
+        asset_name: podman-linux-x86.tar.gz
+        asset_content_type: application/octet-stream
+        
+    - name: Upload amd64 binary
       if: github.ref != 'refs/heads/master'
       id: upload-archive
       uses: actions/upload-release-asset@v1
@@ -62,5 +73,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ./build/podman-linux-amd64.tar.gz
-        asset_name: podman-linux-x86.tar.gz
+        asset_name: podman-linux-amd64.tar.gz
         asset_content_type: application/octet-stream
