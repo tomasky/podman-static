@@ -18,6 +18,7 @@ images: podman podman-remote podman-minimal
 
 podman:
 	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --target $(PODMAN_IMAGE_TARGET) .
+	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --target $(PODMAN_IMAGE_TARGET) -f Dockerfilex86 .
 
 podman-minimal:
 	make podman PODMAN_IMAGE=$(PODMAN_MINIMAL_IMAGE) PODMAN_IMAGE_TARGET=rootlesspodmanminimal
