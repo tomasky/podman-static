@@ -9,6 +9,7 @@ GPG_IMAGE=gpg-signer
 
 ASSET_NAME=podman-linux-amd64
 BUILD_DIR=build/$(ASSET_NAME)
+BUILD_DIR2=build/$(podman-linux-x86)
 
 # TODO: Make the tests work with podman in podman (GitHub's workflow runner also supports podman)
 #DOCKER ?= $(if $(shell podman -v),podman,docker)
