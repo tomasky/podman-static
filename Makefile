@@ -7,9 +7,10 @@ PODMAN_SSH_IMAGE ?= mgoltzsche/podman-ssh
 
 GPG_IMAGE=gpg-signer
 
+ASSET_NAME2=podman-linux-x86
 ASSET_NAME=podman-linux-amd64
 BUILD_DIR=build/$(ASSET_NAME)
-BUILD_DIR2=build/$(podman-linux-x86)
+BUILD_DIR2=build/$(ASSET_NAME2)
 
 # TODO: Make the tests work with podman in podman (GitHub's workflow runner also supports podman)
 #DOCKER ?= $(if $(shell podman -v),podman,docker)
@@ -59,6 +60,10 @@ install:
 tar: .podman-from-container
 	rm -f $(BUILD_DIR).tar.gz
 	tar -C build -czvf $(BUILD_DIR).tar.gz $(ASSET_NAME)
+
+tar: .podman-from-container
+	rm -f $(BUILD_DIR2).tar.gz
+	tar -C build -czvf $(BUILD_DIR2).tar.gz $(ASSET_NAME2)
 
 .podman-from-container: podman
 	rm -rf $(BUILD_DIR)
