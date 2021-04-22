@@ -11,7 +11,7 @@ ASSET_NAME2=podman-linux-x86
 ASSET_NAME=podman-linux-amd64
 BUILD_DIR=build/$(ASSET_NAME)
 BUILD_DIR2=build/$(ASSET_NAME2)
-
+POD_VERSION=V3.1.2
 # TODO: Make the tests work with podman in podman (GitHub's workflow runner also supports podman)
 #DOCKER ?= $(if $(shell podman -v),podman,docker)
 DOCKER ?= docker
@@ -19,9 +19,9 @@ DOCKER ?= docker
 images: podman podman-remote podman-minimal
 
 podman:
-	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --target $(PODMAN_IMAGE_TARGET) .
+	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --build-arg PODMAN_VERSION=$(POD_VERSION) --target $(PODMAN_IMAGE_TARGET) .
 podman2:	
-	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --target $(PODMAN_IMAGE_TARGET) -f Dockerfilex86 .
+	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --build-arg PODMAN_VERSION=$(POD_VERSION) --target $(PODMAN_IMAGE_TARGET) -f Dockerfilex86 .
 
 podman-minimal:
 	make podman PODMAN_IMAGE=$(PODMAN_MINIMAL_IMAGE) PODMAN_IMAGE_TARGET=rootlesspodmanminimal
