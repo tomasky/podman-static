@@ -20,6 +20,7 @@ images: podman podman-remote podman-minimal
 
 podman:
 	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --target $(PODMAN_IMAGE_TARGET) .
+podman2:	
 	$(DOCKER) build --force-rm -t $(PODMAN_IMAGE) --target $(PODMAN_IMAGE_TARGET) -f Dockerfilex86 .
 
 podman-minimal:
@@ -61,10 +62,25 @@ tar: .podman-from-container
 	rm -f $(BUILD_DIR).tar.gz
 	tar -C build -czvf $(BUILD_DIR).tar.gz $(ASSET_NAME)
 
-tar: .podman-from-container
+tar2: .podman-from-container2
 	rm -f $(BUILD_DIR2).tar.gz
 	tar -C build -czvf $(BUILD_DIR2).tar.gz $(ASSET_NAME2)
-
+	
+.podman-from-container2: podman2
+	rm -rf $(BUILD_DIR2)
+	mkdir -p $(BUILD_DIR2)/etc $(BUILD_DIR2)/usr/local/bin $(BUILD_DIR2)/usr/libexec
+	cp -r conf/containers $(BUILD_DIR2)/etc/containers
+	cp -r conf/cni $(BUILD_DIR2)/etc/cni
+	cp README.md $(BUILD_DIR2)/
+	set -e; \
+	CONTAINER=`$(DOCKER) create $(PODMAN_IMAGE)`; \
+	for BINARY in podman runc fusermount3 fuse-overlayfs slirp4netns; do \
+		$(DOCKER) cp $$CONTAINER:/usr/local/bin/$$BINARY $(BUILD_DIR2)/usr/local/bin/; \
+	done; \
+	$(DOCKER) cp $$CONTAINER:/usr/libexec/podman $(BUILD_DIR2)/usr/libexec/podman; \
+	$(DOCKER) cp $$CONTAINER:/usr/libexec/cni $(BUILD_DIR2)/usr/libexec/cni; \
+	$(DOCKER) rm $$CONTAINER
+	
 .podman-from-container: podman
 	rm -rf $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/etc $(BUILD_DIR)/usr/local/bin $(BUILD_DIR)/usr/libexec
