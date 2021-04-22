@@ -35,7 +35,7 @@ _Within the container `docker` is linked to `podman` to support applications tha
 
 Download the statically linked binaries of podman and its dependencies:
 ```sh
-curl -fsSL -o podman-linux-amd64.tar.gz https://download.fastgit.org/mgoltzsche/podman-static/releases/latest/download/podman-linux-amd64.tar.gz
+curl -fsSL -o podman-linux-amd64.tar.gz https://github.com/tomasky/podman-static/releases/latest/download/podman-linux-amd64.tar.gz
 ```
 
 Verify the archive's signature (optional):
