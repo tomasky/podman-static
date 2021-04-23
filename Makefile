@@ -72,6 +72,8 @@ tar2: .podman-from-container2
 	cp -r conf/containers $(BUILD_DIR2)/etc/containers
 	cp -r conf/cni $(BUILD_DIR2)/etc/cni
 	cp README.md $(BUILD_DIR2)/
+	curl -fsSL -o catatonit https://github.com/openSUSE/catatonit/releases/latest/download/catatonit.x86_64
+
 	set -e; \
 	CONTAINER=`$(DOCKER) create $(PODMAN_IMAGE)`; \
 	for BINARY in podman runc fusermount3 fuse-overlayfs slirp4netns; do \
@@ -80,6 +82,7 @@ tar2: .podman-from-container2
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/podman $(BUILD_DIR2)/usr/libexec/podman; \
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/cni $(BUILD_DIR2)/usr/libexec/cni; \
 	$(DOCKER) rm $$CONTAINER
+	cp catatonit $(BUILD_DIR)/usr/libexec/podman/
 	
 .podman-from-container: podman
 	rm -rf $(BUILD_DIR)
@@ -87,6 +90,8 @@ tar2: .podman-from-container2
 	cp -r conf/containers $(BUILD_DIR)/etc/containers
 	cp -r conf/cni $(BUILD_DIR)/etc/cni
 	cp README.md $(BUILD_DIR)/
+	curl -fsSL -o catatonit https://github.com/openSUSE/catatonit/releases/latest/download/catatonit.x86_64
+
 	set -e; \
 	CONTAINER=`$(DOCKER) create $(PODMAN_IMAGE)`; \
 	for BINARY in podman runc fusermount3 fuse-overlayfs slirp4netns; do \
@@ -95,6 +100,7 @@ tar2: .podman-from-container2
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/podman $(BUILD_DIR)/usr/libexec/podman; \
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/cni $(BUILD_DIR)/usr/libexec/cni; \
 	$(DOCKER) rm $$CONTAINER
+	cp catatonit $(BUILD_DIR)/usr/libexec/podman/
 
 signed-tar: tar .gpg
 	@echo Running gpg signing container with GPG_SIGN_KEY and GPG_SIGN_KEY_PASSPHRASE
