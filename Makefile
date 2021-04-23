@@ -73,7 +73,7 @@ tar2: .podman-from-container2
 	cp -r conf/cni $(BUILD_DIR2)/etc/cni
 	cp README.md $(BUILD_DIR2)/
 	curl -fsSL -o catatonit https://github.com/openSUSE/catatonit/releases/latest/download/catatonit.x86_64
-
+	chmod a+x catatonit
 	set -e; \
 	CONTAINER=`$(DOCKER) create $(PODMAN_IMAGE)`; \
 	for BINARY in podman runc fusermount3 fuse-overlayfs slirp4netns; do \
@@ -91,7 +91,7 @@ tar2: .podman-from-container2
 	cp -r conf/cni $(BUILD_DIR)/etc/cni
 	cp README.md $(BUILD_DIR)/
 	curl -fsSL -o catatonit https://github.com/openSUSE/catatonit/releases/latest/download/catatonit.x86_64
-
+	chmod a+x catatonit
 	set -e; \
 	CONTAINER=`$(DOCKER) create $(PODMAN_IMAGE)`; \
 	for BINARY in podman runc fusermount3 fuse-overlayfs slirp4netns; do \
