@@ -82,7 +82,7 @@ tar2: .podman-from-container2
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/podman $(BUILD_DIR2)/usr/libexec/podman; \
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/cni $(BUILD_DIR2)/usr/libexec/cni; \
 	$(DOCKER) rm $$CONTAINER
-	cp catatonit $(BUILD_DIR)/usr/libexec/podman/
+	cp catatonit $(BUILD_DIR2)/usr/libexec/podman/
 	
 .podman-from-container: podman
 	rm -rf $(BUILD_DIR)
