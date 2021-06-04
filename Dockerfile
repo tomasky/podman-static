@@ -2,7 +2,7 @@
 FROM golang:1.16-alpine3.13 AS runc
 ARG RUNC_VERSION=v1.0.0-rc93
 RUN set -eux; \
-	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev make git bash; \
+	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
 	cd src/github.com/opencontainers/runc; \
 	make static BUILDTAGS='seccomp selinux ambient'; \
@@ -17,7 +17,7 @@ FROM golang:1.16-alpine3.13 AS podmanbuildbase
 RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
-	libseccomp-dev libselinux-dev ostree-dev openssl iptables bash \
+	libseccomp-dev libseccomp-static libselinux-dev ostree-dev openssl iptables bash \
 	go-md2man
 RUN git clone https://github.com/bats-core/bats-core.git && cd bats-core && ./install.sh /usr/local
 
