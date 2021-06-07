@@ -61,7 +61,7 @@ RUN set -ex; \
 RUN git clone https://github.com/containers/dnsname /go/src/github.com/containers/dnsname
 WORKDIR /go/src/github.com/containers/dnsname
 RUN set -ex; \
-	PLUGINDIR=plugins/meta/dnsname
+	PLUGINDIR=plugins/meta/dnsname; \
 	PLUGINBIN=/usr/libexec/cni/$(basename $PLUGINDIR); \
 	CGO_ENABLED=0 go build -o $PLUGINBIN -ldflags "-s -w -extldflags '-static'" ./$PLUGINDIR;
 
