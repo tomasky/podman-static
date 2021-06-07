@@ -50,6 +50,7 @@ Install the binaries and configuration on your host after you've inspected the a
 ```sh
 tar -xzf podman-linux-amd64.tar.gz
 sudo cp -r podman-linux-amd64/usr podman-linux-amd64/etc /
+sudo apt-get install util-linux uidmap # ubuntu dist
 ```
 _If you have docker installed on the same host it will be broken until you remove the newly installed `/usr/local/bin/runc` binary since docker is not compatible with the latest runc version provided here while podman is also compatible with the older runc version that comes with docker._  
 
