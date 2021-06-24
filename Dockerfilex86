@@ -125,7 +125,7 @@ ARG GOSU_VERSION=1.12
 RUN set -ex; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64"; \
 	wget -O /tmp/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc"; \
-	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
+	gpg --keyserver keyserver.ubuntu.com --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify /tmp/gosu.asc /usr/local/bin/gosu; \
 	chmod +x /usr/local/bin/gosu; \
 	gosu nobody true
@@ -168,7 +168,7 @@ ARG CRUN_VERSION=0.20.1
 RUN set -ex; \
 	wget -O /usr/local/bin/crun https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd; \
 	wget -O /tmp/crun.asc https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd.asc; \
-	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 027F3BD58594CA181BB5EC50E4730F97F60286ED; \
+	gpg --keyserver keyserver.ubuntu.com --recv-keys 027F3BD58594CA181BB5EC50E4730F97F60286ED; \
 	gpg --batch --verify /tmp/crun.asc /usr/local/bin/crun; \
 	chmod +x /usr/local/bin/crun; \
 	crun --help >/dev/null
