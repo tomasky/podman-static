@@ -39,12 +39,12 @@ RUN set -ex; \
 
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
+RUN apk add --update --no-cache libseccomp-dev
 # conmon 2.0.29 cannot be built currently since alpine does not provide nix package yet
 ARG CONMON_VERSION=v2.0.30
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
-	make install.libseccomp.sudo ;\
 	make git-vars bin/conmon PKG_CONFIG='pkg-config --static' CFLAGS='-std=c99 -Os -Wall -Wextra -Werror -static' LDFLAGS='-s -w -static'; \
 	bin/conmon --help >/dev/null
 
