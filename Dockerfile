@@ -1,6 +1,6 @@
 # runc
-FROM golang:1.16-alpine3.13 AS runc
-ARG RUNC_VERSION=v1.0.0
+FROM golang:1.16-alpine3.14 AS runc
+ARG RUNC_VERSION=v1.0.2
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
@@ -13,7 +13,7 @@ RUN set -eux; \
 
 
 # podman build base
-FROM golang:1.16-alpine3.13 AS podmanbuildbase
+FROM golang:1.16-alpine3.14 AS podmanbuildbase
 RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
@@ -39,7 +39,7 @@ RUN set -ex; \
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
 # conmon 2.0.19 cannot be built currently since alpine does not provide nix package yet
-ARG CONMON_VERSION=v2.0.29
+ARG CONMON_VERSION=v2.0.30
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
@@ -49,7 +49,7 @@ RUN set -ex; \
 
 # CNI plugins
 FROM podmanbuildbase AS cniplugins
-ARG CNI_PLUGIN_VERSION=v0.9.1
+ARG CNI_PLUGIN_VERSION=v1.0.1
 RUN git clone --branch=${CNI_PLUGIN_VERSION} https://github.com/containernetworking/plugins /go/src/github.com/containernetworking/plugins
 WORKDIR /go/src/github.com/containernetworking/plugins
 RUN set -ex; \
@@ -70,7 +70,7 @@ FROM podmanbuildbase AS slirp4netns
 WORKDIR /
 RUN apk add --update --no-cache autoconf automake meson ninja linux-headers libcap-static libcap-dev
 # Build libslirp
-ARG LIBSLIRP_VERSION=v4.6.0
+ARG LIBSLIRP_VERSION=v4.6.1
 RUN git clone --branch=${LIBSLIRP_VERSION} https://gitlab.freedesktop.org/slirp/libslirp.git
 WORKDIR /libslirp
 RUN set -ex; \
@@ -78,7 +78,7 @@ RUN set -ex; \
 	ninja -C build install
 # Build slirp4netns
 WORKDIR /
-ARG SLIRP4NETNS_VERSION=v1.1.11
+ARG SLIRP4NETNS_VERSION=v1.1.12
 RUN git clone --branch $SLIRP4NETNS_VERSION https://github.com/rootless-containers/slirp4netns.git
 WORKDIR /slirp4netns
 RUN set -ex; \
@@ -90,7 +90,7 @@ RUN set -ex; \
 # fuse-overlayfs (derived from https://github.com/containers/fuse-overlayfs/blob/master/Dockerfile.static)
 FROM podmanbuildbase AS fuse-overlayfs
 RUN apk add --update --no-cache autoconf automake meson ninja clang g++ eudev-dev fuse3-dev
-ARG LIBFUSE_VERSION=fuse-3.10.4
+ARG LIBFUSE_VERSION=fuse-3.10.5
 RUN git clone --branch=$LIBFUSE_VERSION https://github.com/libfuse/libfuse /libfuse
 WORKDIR /libfuse
 RUN set -ex; \
@@ -101,7 +101,7 @@ RUN set -ex; \
 	touch /dev/fuse; \
 	ninja install; \
 	fusermount3 -V
-ARG FUSEOVERLAYFS_VERSION=v1.5.0
+ARG FUSEOVERLAYFS_VERSION=v1.7.1
 RUN git clone --branch=$FUSEOVERLAYFS_VERSION https://github.com/containers/fuse-overlayfs /fuse-overlayfs
 WORKDIR /fuse-overlayfs
 RUN set -ex; \
@@ -148,7 +148,7 @@ COPY --from=runc   /usr/local/bin/runc   /usr/local/bin/runc
 
 # Download crun
 FROM gpg AS crun
-ARG CRUN_VERSION=0.20.1
+ARG CRUN_VERSION=1.1
 RUN set -ex; \
 	wget -O /usr/local/bin/crun https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd; \
 	wget -O /tmp/crun.asc https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd.asc; \
