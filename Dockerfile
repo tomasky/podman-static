@@ -1,6 +1,6 @@
 # runc
 FROM golang:1.16-alpine3.14 AS runc
-ARG RUNC_VERSION=v1.0.2
+ARG RUNC_VERSION=v1.0.3
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
@@ -30,6 +30,8 @@ RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman sr
 WORKDIR $GOPATH/src/github.com/containers/podman
 RUN make install.tools
 RUN set -ex; \
+	CGO_ENABLED=0 make bin/rootlessport BUILDFLAGS='-ldflags "-s -w -extldflags '-static'"' ; \
+	mv bin/rootlessport /usr/local/bin/rootlessport;\
 	make bin/podman LDFLAGS_PODMAN="-s -w -extldflags '-static'" BUILDTAGS='seccomp selinux apparmor exclude_graphdriver_devicemapper containers_image_ostree_stub containers_image_openpgp'; \
 	mv bin/podman /usr/local/bin/podman; \
 	podman --help >/dev/null; \
@@ -39,7 +41,7 @@ RUN set -ex; \
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
 # conmon 2.0.19 cannot be built currently since alpine does not provide nix package yet
-ARG CONMON_VERSION=v2.0.30
+ARG CONMON_VERSION=v2.0.31
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
@@ -122,6 +124,7 @@ LABEL maintainer="Max Goltzsche <max.goltzsche@gmail.com>"
 RUN apk add --no-cache tzdata ca-certificates
 COPY --from=conmon /conmon/bin/conmon /usr/libexec/podman/conmon
 COPY --from=podman /usr/local/bin/podman /usr/local/bin/podman
+COPY --from=podman /usr/local/bin/rootlessport /usr/libexec/podman/rootlessport
 COPY conf/containers /etc/containers
 RUN set -ex; \
 	adduser -D podman -h /podman -u 1000; \
