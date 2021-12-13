@@ -31,7 +31,7 @@ WORKDIR /root/go/src/github.com/containers/podman
 RUN make install.tools
 RUN set -ex; \
 	make install.libseccomp.sudo ;\
-	CGO_ENABLED=0 make bin/rootlessport BUILDFLAGS='-ldflags \"-s -w -extldflags '-static'\"' ; \
+	CGO_ENABLED=0 make bin/rootlessport BUILDFLAGS='-ldflags "-s -w -extldflags '-static'"' ; \
 	mv bin/rootlessport /usr/local/bin/rootlessport;\
 	make bin/podman LDFLAGS_PODMAN="-s -w -extldflags '-static'" BUILDTAGS='seccomp selinux apparmor exclude_graphdriver_devicemapper containers_image_ostree_stub containers_image_openpgp'; \
 	mv bin/podman /usr/local/bin/podman; \
@@ -128,7 +128,7 @@ LABEL maintainer="Max Goltzsche <max.goltzsche@gmail.com>"
 RUN apk add --no-cache tzdata ca-certificates
 COPY --from=conmon /conmon/bin/conmon /usr/libexec/podman/conmon
 COPY --from=podman /usr/local/bin/podman /usr/local/bin/podman
-COPY --from=podman /usr/local/bin/rootlessport /usr/local/bin/rootlessport
+COPY --from=podman /usr/local/bin/rootlessport /usr/libexec/podman/rootlessport
 COPY conf/containers /etc/containers
 RUN set -ex; \
 	adduser -D podman -h /podman -u 1000; \
