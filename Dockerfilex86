@@ -1,11 +1,11 @@
 # runc
 FROM i386/alpine AS runc
-ARG RUNC_VERSION=v1.0.2
+ARG RUNC_VERSION=v1.0.3
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev  make git   bash go; \
 	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
 	cd src/github.com/opencontainers/runc; \
-	make static BUILDTAGS=' selinux ambient'; \
+	make static BUILDTAGS='seccomp selinux ambient'; \
 	mv runc /usr/local/bin/runc; \
 	rm -rf /root/go/src/github.com/opencontainers/runc; \
 	apk del --purge .build-deps; \
@@ -40,7 +40,7 @@ RUN set -ex; \
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
 # conmon 2.0.29 cannot be built currently since alpine does not provide nix package yet
-ARG CONMON_VERSION=v2.0.30
+ARG CONMON_VERSION=v2.0.31
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
