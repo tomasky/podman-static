@@ -42,7 +42,7 @@ RUN set -ex; \
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
 # conmon 2.0.29 cannot be built currently since alpine does not provide nix package yet
-ARG CONMON_VERSION=v2.0.32
+ARG CONMON_VERSION=v2.1.0
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
