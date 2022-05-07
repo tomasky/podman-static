@@ -72,7 +72,7 @@ FROM podmanbuildbase AS slirp4netns
 WORKDIR /
 RUN apk add --update --no-cache autoconf automake meson ninja linux-headers libcap-static libcap-dev
 # Build libslirp
-ARG LIBSLIRP_VERSION=v4.7.0
+ARG LIBSLIRP_VERSION=v4.6.1
 RUN git clone --branch=${LIBSLIRP_VERSION} https://gitlab.freedesktop.org/slirp/libslirp.git
 WORKDIR /libslirp
 RUN set -ex; \
