@@ -1,5 +1,5 @@
 # runc
-FROM golang:1.16-alpine3.14 AS runc
+FROM golang:1.18-alpine3.15 AS runc
 ARG RUNC_VERSION=v1.1.3
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
@@ -13,7 +13,7 @@ RUN set -eux; \
 
 
 # podman build base
-FROM golang:1.16-alpine3.14 AS podmanbuildbase
+FROM golang:1.18-alpine3.15 AS podmanbuildbase
 RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
@@ -72,7 +72,7 @@ FROM podmanbuildbase AS slirp4netns
 WORKDIR /
 RUN apk add --update --no-cache autoconf automake meson ninja linux-headers libcap-static libcap-dev
 # Build libslirp
-ARG LIBSLIRP_VERSION=v4.6.1
+ARG LIBSLIRP_VERSION=v4.7.0
 RUN git clone --branch=${LIBSLIRP_VERSION} https://gitlab.freedesktop.org/slirp/libslirp.git
 WORKDIR /libslirp
 RUN set -ex; \
