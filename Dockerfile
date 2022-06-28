@@ -73,9 +73,11 @@ WORKDIR /
 RUN apk add --update --no-cache autoconf automake meson ninja linux-headers libcap-static libcap-dev
 # Build libslirp
 ARG LIBSLIRP_VERSION=v4.7.0
-RUN git clone --branch=${LIBSLIRP_VERSION} https://gitlab.freedesktop.org/slirp/libslirp.git
+RUN git clone -c 'advice.detachedHead=false' --depth=1 --branch=${LIBSLIRP_VERSION} https://gitlab.freedesktop.org/slirp/libslirp.git
 WORKDIR /libslirp
 RUN set -ex; \
+	rm -rf /usr/lib/libglib-2.0.so /usr/lib/libintl.so; \
+	ln -s /usr/bin/clang /go/bin/clang; \
 	LDFLAGS="-s -w -static" meson --prefix /usr -D default_library=static build; \
 	ninja -C build install
 # Build slirp4netns
