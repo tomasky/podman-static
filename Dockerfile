@@ -3,7 +3,7 @@ FROM golang:1.18-alpine3.15 AS runc
 ARG RUNC_VERSION=v1.1.4
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
-	git clone --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
+	git clone -c 'advice.detachedHead=false' --depth=1 --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
 	cd src/github.com/opencontainers/runc; \
 	make static BUILDTAGS='seccomp selinux ambient'; \
 	mv runc /usr/local/bin/runc; \
