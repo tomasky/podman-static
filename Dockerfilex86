@@ -28,6 +28,7 @@ RUN apk add --update --no-cache tzdata curl autoconf automake libtool
 ARG PODMAN_VERSION
 RUN git clone --branch ${PODMAN_VERSION} https://github.com/containers/podman /root/go/src/github.com/containers/podman
 WORKDIR /root/go/src/github.com/containers/podman
+RUN sed -i 's/.install.swagger #/#/g' Makefile 
 RUN make install.tools
 RUN set -ex; \
 	CGO_ENABLED=0 make bin/rootlessport BUILDFLAGS='-ldflags "-s -w -extldflags '-static'"' ; \

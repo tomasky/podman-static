@@ -54,7 +54,7 @@ sudo apt-get install util-linux uidmap # ubuntu dist
 ```
 _If you have docker installed on the same host it will be broken until you remove the newly installed `/usr/local/bin/runc` binary since docker is not compatible with the latest runc version provided here while podman is also compatible with the older runc version that comes with docker._  
 
-In order to run rootless containers that use multiple uids/gids you may want to set up a uid/gid mapping for your user on your host:
+In order to run [rootless](https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md) containers that use multiple uids/gids you may want to set up a uid/gid mapping for your user on your host:
 ```
 sudo sh -c "echo $(id -un):100000:200000 >> /etc/subuid"
 sudo sh -c "echo $(id -gn):100000:200000 >> /etc/subgid"
