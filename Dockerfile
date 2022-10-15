@@ -156,9 +156,6 @@ FROM gpg AS crun
 ARG CRUN_VERSION=1.6
 RUN set -ex; \
 	wget -O /usr/local/bin/crun https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd; \
-	wget -O /tmp/crun.asc https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd.asc; \
-	gpg --keyserver keyserver.ubuntu.com --recv-keys 027F3BD58594CA181BB5EC50E4730F97F60286ED; \
-	gpg --batch --verify /tmp/crun.asc /usr/local/bin/crun; \
 	chmod +x /usr/local/bin/crun; \
 	crun --help >/dev/null
 
@@ -170,6 +167,7 @@ COPY conf/crun-containers.conf /etc/containers/containers.conf
 # Build podman image with rootless binaries and CNI plugins
 FROM rootlesspodmanrunc AS podmanall
 RUN apk add --no-cache iptables ip6tables
+COPY --from=crun /usr/local/bin/crun /usr/local/bin/crun
 COPY --from=slirp4netns /slirp4netns/slirp4netns /usr/local/bin/slirp4netns
 COPY --from=cniplugins /usr/libexec/cni /usr/libexec/cni
 COPY conf/cni /etc/cni
