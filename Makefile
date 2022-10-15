@@ -94,7 +94,7 @@ tar2: .podman-from-container2
 	chmod a+x catatonit
 	set -e; \
 	CONTAINER=`$(DOCKER) create $(PODMAN_IMAGE)`; \
-	for BINARY in podman runc fusermount3 fuse-overlayfs slirp4netns; do \
+	for BINARY in podman crun runc fusermount3 fuse-overlayfs slirp4netns; do \
 		$(DOCKER) cp $$CONTAINER:/usr/local/bin/$$BINARY $(BUILD_DIR)/usr/local/bin/; \
 	done; \
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/podman $(BUILD_DIR)/usr/libexec/podman; \
