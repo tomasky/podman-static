@@ -89,6 +89,7 @@ tar2: .podman-from-container2
 	mkdir -p $(BUILD_DIR)/etc $(BUILD_DIR)/usr/local/bin $(BUILD_DIR)/usr/libexec
 	cp -r conf/containers $(BUILD_DIR)/etc/containers
 	cp -r conf/cni $(BUILD_DIR)/etc/cni
+	cp rootless.bash $(BUILD_DIR)/
 	cp README.md $(BUILD_DIR)/
 	curl -fsSL -o catatonit https://github.com/openSUSE/catatonit/releases/latest/download/catatonit.x86_64
 	chmod a+x catatonit

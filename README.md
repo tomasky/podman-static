@@ -1,67 +1,79 @@
 # podman binaries and container images ![GitHub workflow badge](https://github.com/mgoltzsche/podman-static/workflows/Release/badge.svg)
 
 This project provides alpine-based podman container images and statically linked (rootless) podman binaries for linux-amd64 along with its dependencies _(without systemd support)_:
-* [podman](https://github.com/containers/podman)
-* [runc](https://github.com/opencontainers/runc/) or [crun](https://github.com/containers/crun)
-* [conmon](https://github.com/containers/conmon)
-* [fuse-overlayfs](https://github.com/containers/fuse-overlayfs) and [libfuse](https://github.com/libfuse/libfuse)
-* [slirp4netns](https://github.com/rootless-containers/slirp4netns) (with [libslirp](https://gitlab.freedesktop.org/slirp/libslirp))
-* [CNI plugins](https://github.com/containernetworking/plugins): loopback, bridge, host-local, portmap
+
+- [podman](https://github.com/containers/podman)
+- [runc](https://github.com/opencontainers/runc/) or [crun](https://github.com/containers/crun)
+- [conmon](https://github.com/containers/conmon)
+- [fuse-overlayfs](https://github.com/containers/fuse-overlayfs) and [libfuse](https://github.com/libfuse/libfuse)
+- [slirp4netns](https://github.com/rootless-containers/slirp4netns) (with [libslirp](https://gitlab.freedesktop.org/slirp/libslirp))
+- [CNI plugins](https://github.com/containernetworking/plugins): loopback, bridge, host-local, portmap
 
 ## Container image
 
 The following image tags are supported:
 
-| Tag | Description |
-| --- | ----------- |
-| `latest`, `<VERSION>` | podman with both rootless and rootful dependencies: runc, conmon, fuse-overlayfs, slirp4netns, CNI plugins. |
+| Tag                            | Description                                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `latest`, `<VERSION>`          | podman with both rootless and rootful dependencies: runc, conmon, fuse-overlayfs, slirp4netns, CNI plugins.               |
 | `minimal`, `<VERSION>-minimal` | podman, crun, fuse-overlayfs and conmon binaries, configured to use the host's existing namespaces (low isolation level). |
-| `remote`, `<VERSION>-remote` | the podman remote binary. |
+| `remote`, `<VERSION>-remote`   | the podman remote binary.                                                                                                 |
 
 By default containers are run as user `root`.
-However the `podman` (uid/gid 1000) user can be used instead for which also a subuid/gid mapping is configured with the image (as described within the binary installation section below).  
+However the `podman` (uid/gid 1000) user can be used instead for which also a subuid/gid mapping is configured with the image (as described within the binary installation section below).
 
 Please note that, when running non-remote podman within a docker container, the docker container needs to be `--privileged`.
 
 ### Container usage example
 
 Run podman in docker:
+
 ```sh
 docker run --privileged -u podman:podman mgoltzsche/podman:minimal docker run alpine:latest echo hello from nested container
 ```
+
 _Within the container `docker` is linked to `podman` to support applications that use the `docker` command._
 
 ## Binary installation on a host
 
 Download the statically linked binaries of podman and its dependencies:
+
 ```sh
 curl -fsSL -o podman-linux-amd64.tar.gz https://github.com/tomasky/podman-static/releases/latest/download/podman-linux-amd64.tar.gz
 ```
 
 Verify the archive's signature (optional):
+
 ```sh
 curl -fsSL -o podman-linux-amd64.tar.gz.asc https://github.com/mgoltzsche/podman-static/releases/latest/download/podman-linux-amd64.tar.gz.asc
 gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0CCF102C4F95D89E583FF1D4F8B5AF50344BB503
 gpg --batch --verify podman-linux-amd64.tar.gz.asc podman-linux-amd64.tar.gz
 ```
-_This may fail every now and then due to desync/unavailable key servers. In that case please retry._  
+
+_This may fail every now and then due to desync/unavailable key servers. In that case please retry._
 
 Install the binaries and configuration on your host after you've inspected the archive:
+
 ```sh
 tar -xzf podman-linux-amd64.tar.gz
 sudo cp -r podman-linux-amd64/usr podman-linux-amd64/etc /
 sudo apt-get install util-linux uidmap # ubuntu dist
 ```
-_If you have docker installed on the same host it will be broken until you remove the newly installed `/usr/local/bin/runc` binary since docker is not compatible with the latest runc version provided here while podman is also compatible with the older runc version that comes with docker._  
+
+_If you have docker installed on the same host it will be broken until you remove the newly installed `/usr/local/bin/runc` binary since docker is not compatible with the latest runc version provided here while podman is also compatible with the older runc version that comes with docker._
 
 In order to run [rootless](https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md) containers that use multiple uids/gids you may want to set up a uid/gid mapping for your user on your host:
+
 ```
-sudo sh -c "echo $(id -un):100000:200000 >> /etc/subuid"
-sudo sh -c "echo $(id -gn):100000:200000 >> /etc/subgid"
+sudo sh -c "echo $(id -un):100000:65536 >> /etc/subuid"
+sudo sh -c "echo $(id -gn):100000:65536 >> /etc/subgid"
+bash rootless.bash
 ```
-_Please make sure you don't add the mapping multiple times._  
+
+_Please make sure you don't add the mapping multiple times._
 
 To support applications that use the `docker` command you may want to link it to `podman` as follows:
+
 ```sh
 sudo ln -s /usr/local/bin/podman /usr/local/bin/docker
 ```
@@ -75,8 +87,9 @@ podman run alpine:latest echo hello from podman
 ## Default persistent storage location
 
 The default storage location depends on the user:
-* For `root` storage is located at `/var/lib/containers/storage`.
-* For unprivileged users storage is located at `~/.local/share/containers/storage`.
+
+- For `root` storage is located at `/var/lib/containers/storage`.
+- For unprivileged users storage is located at `~/.local/share/containers/storage`.
 
 ## Local build & test
 
