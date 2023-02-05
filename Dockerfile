@@ -51,7 +51,7 @@ RUN set -ex; \
 
 # CNI plugins
 FROM podmanbuildbase AS cniplugins
-ARG CNI_PLUGIN_VERSION=v1.1.1
+ARG CNI_PLUGIN_VERSION=v1.2.0
 RUN git clone --branch=${CNI_PLUGIN_VERSION} https://github.com/containernetworking/plugins /go/src/github.com/containernetworking/plugins
 WORKDIR /go/src/github.com/containernetworking/plugins
 RUN set -ex; \
@@ -105,7 +105,7 @@ RUN set -ex; \
 	touch /dev/fuse; \
 	ninja install; \
 	fusermount3 -V
-ARG FUSEOVERLAYFS_VERSION=v1.9
+ARG FUSEOVERLAYFS_VERSION=v1.10
 RUN git clone --branch=$FUSEOVERLAYFS_VERSION https://github.com/containers/fuse-overlayfs /fuse-overlayfs
 WORKDIR /fuse-overlayfs
 RUN set -ex; \
@@ -117,11 +117,11 @@ RUN set -ex; \
 
 
 # Download gpg
-FROM alpine:3.13 AS gpg
+FROM alpine:3.15 AS gpg
 RUN apk add --no-cache gnupg
 
 # Build podman base image
-FROM alpine:3.13 AS podmanbase
+FROM alpine:3.15 AS podmanbase
 LABEL maintainer="Max Goltzsche <max.goltzsche@gmail.com>"
 RUN apk add --no-cache tzdata ca-certificates
 COPY --from=conmon /conmon/bin/conmon /usr/libexec/podman/conmon
