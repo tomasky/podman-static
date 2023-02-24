@@ -41,7 +41,7 @@ RUN set -ex; \
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
 # conmon 2.0.19 cannot be built currently since alpine does not provide nix package yet
-ARG CONMON_VERSION=v2.1.5
+ARG CONMON_VERSION=v2.1.6
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
@@ -94,7 +94,7 @@ RUN set -ex; \
 # fuse-overlayfs (derived from https://github.com/containers/fuse-overlayfs/blob/master/Dockerfile.static)
 FROM podmanbuildbase AS fuse-overlayfs
 RUN apk add --update --no-cache autoconf automake meson ninja clang g++ eudev-dev fuse3-dev
-ARG LIBFUSE_VERSION=fuse-3.12.0
+ARG LIBFUSE_VERSION=fuse-3.14.0
 RUN git clone --branch=$LIBFUSE_VERSION https://github.com/libfuse/libfuse /libfuse
 WORKDIR /libfuse
 RUN set -ex; \
