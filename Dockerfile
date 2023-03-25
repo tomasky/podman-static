@@ -41,7 +41,7 @@ RUN set -ex; \
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
 # conmon 2.0.19 cannot be built currently since alpine does not provide nix package yet
-ARG CONMON_VERSION=v2.1.6
+ARG CONMON_VERSION=v2.1.7
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
@@ -105,7 +105,7 @@ RUN set -ex; \
 	touch /dev/fuse; \
 	ninja install; \
 	fusermount3 -V
-ARG FUSEOVERLAYFS_VERSION=v1.10
+ARG FUSEOVERLAYFS_VERSION=v1.11
 RUN git clone --branch=$FUSEOVERLAYFS_VERSION https://github.com/containers/fuse-overlayfs /fuse-overlayfs
 WORKDIR /fuse-overlayfs
 RUN set -ex; \
@@ -153,7 +153,7 @@ COPY --from=runc   /usr/local/bin/runc   /usr/local/bin/runc
 
 # Download crun
 FROM gpg AS crun
-ARG CRUN_VERSION=1.8
+ARG CRUN_VERSION=1.8.2
 RUN set -ex; \
 	wget -O /usr/local/bin/crun https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd; \
 	chmod +x /usr/local/bin/crun; \
