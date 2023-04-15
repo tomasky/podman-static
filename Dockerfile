@@ -1,6 +1,6 @@
 # runc
 FROM golang:1.18-alpine3.15 AS runc
-ARG RUNC_VERSION=v1.1.5
+ARG RUNC_VERSION=v1.1.6
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
 	git clone -c 'advice.detachedHead=false' --depth=1 --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
@@ -153,7 +153,7 @@ COPY --from=runc   /usr/local/bin/runc   /usr/local/bin/runc
 
 # Download crun
 FROM gpg AS crun
-ARG CRUN_VERSION=1.8.3
+ARG CRUN_VERSION=1.8.4
 RUN set -ex; \
 	wget -O /usr/local/bin/crun https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd; \
 	chmod +x /usr/local/bin/crun; \
