@@ -1,6 +1,6 @@
 # runc
-FROM golang:1.18-alpine3.15 AS runc
-ARG RUNC_VERSION=v1.1.7
+FROM golang:1.19-alpine3.16 AS runc
+ARG RUNC_VERSION=v1.1.8
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
 	git clone -c 'advice.detachedHead=false' --depth=1 --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
@@ -13,7 +13,7 @@ RUN set -eux; \
 
 
 # podman build base
-FROM golang:1.18-alpine3.15 AS podmanbuildbase
+FROM golang:1.19-alpine3.16 AS podmanbuildbase
 RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
@@ -105,7 +105,7 @@ RUN set -ex; \
 	touch /dev/fuse; \
 	ninja install; \
 	fusermount3 -V
-ARG FUSEOVERLAYFS_VERSION=v1.11
+ARG FUSEOVERLAYFS_VERSION=v1.12
 RUN git clone --branch=$FUSEOVERLAYFS_VERSION https://github.com/containers/fuse-overlayfs /fuse-overlayfs
 WORKDIR /fuse-overlayfs
 RUN set -ex; \
@@ -117,11 +117,11 @@ RUN set -ex; \
 
 
 # Download gpg
-FROM alpine:3.15 AS gpg
+FROM alpine:3.16 AS gpg
 RUN apk add --no-cache gnupg
 
 # Build podman base image
-FROM alpine:3.15 AS podmanbase
+FROM alpine:3.16 AS podmanbase
 LABEL maintainer="Max Goltzsche <max.goltzsche@gmail.com>"
 RUN apk add --no-cache tzdata ca-certificates
 COPY --from=conmon /conmon/bin/conmon /usr/libexec/podman/conmon
