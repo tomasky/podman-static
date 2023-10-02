@@ -82,7 +82,7 @@ RUN set -ex; \
 	ninja -C build install
 # Build slirp4netns
 WORKDIR /
-ARG SLIRP4NETNS_VERSION=v1.2.1
+ARG SLIRP4NETNS_VERSION=v1.2.2
 RUN git clone --branch $SLIRP4NETNS_VERSION https://github.com/rootless-containers/slirp4netns.git
 WORKDIR /slirp4netns
 RUN set -ex; \
@@ -153,7 +153,7 @@ COPY --from=runc   /usr/local/bin/runc   /usr/local/bin/runc
 
 # Download crun
 FROM gpg AS crun
-ARG CRUN_VERSION=1.8.7
+ARG CRUN_VERSION=1.9.2
 RUN set -ex; \
 	wget -O /usr/local/bin/crun https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd; \
 	chmod +x /usr/local/bin/crun; \
