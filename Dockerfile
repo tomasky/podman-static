@@ -1,5 +1,5 @@
 # runc
-FROM golang:1.19-alpine3.16 AS runc
+FROM golang:1.20-alpine3.16 AS runc
 ARG RUNC_VERSION=v1.1.7
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
@@ -13,7 +13,7 @@ RUN set -eux; \
 
 
 # podman build base
-FROM golang:1.19-alpine3.16 AS podmanbuildbase
+FROM golang:1.20-alpine3.16 AS podmanbuildbase
 RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
@@ -51,7 +51,7 @@ RUN set -ex; \
 
 # CNI plugins
 FROM podmanbuildbase AS cniplugins
-ARG CNI_PLUGIN_VERSION=v1.3.0
+ARG CNI_PLUGIN_VERSION=v1.4.0
 RUN git clone --branch=${CNI_PLUGIN_VERSION} https://github.com/containernetworking/plugins /go/src/github.com/containernetworking/plugins
 WORKDIR /go/src/github.com/containernetworking/plugins
 RUN set -ex; \
@@ -153,7 +153,7 @@ COPY --from=runc   /usr/local/bin/runc   /usr/local/bin/runc
 
 # Download crun
 FROM gpg AS crun
-ARG CRUN_VERSION=1.9.2
+ARG CRUN_VERSION=1.12
 RUN set -ex; \
 	wget -O /usr/local/bin/crun https://github.com/containers/crun/releases/download/$CRUN_VERSION/crun-${CRUN_VERSION}-linux-amd64-disable-systemd; \
 	chmod +x /usr/local/bin/crun; \
