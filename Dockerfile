@@ -1,6 +1,6 @@
 # runc
 FROM golang:1.20-alpine3.16 AS runc
-ARG RUNC_VERSION=v1.1.7
+ARG RUNC_VERSION=v1.1.11
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
 	git clone -c 'advice.detachedHead=false' --depth=1 --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
@@ -41,7 +41,7 @@ RUN set -ex; \
 # conmon (without systemd support)
 FROM podmanbuildbase AS conmon
 # conmon 2.0.19 cannot be built currently since alpine does not provide nix package yet
-ARG CONMON_VERSION=v2.1.8
+ARG CONMON_VERSION=v2.1.10
 RUN git clone --branch ${CONMON_VERSION} https://github.com/containers/conmon.git /conmon
 WORKDIR /conmon
 RUN set -ex; \
