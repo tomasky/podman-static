@@ -1,6 +1,6 @@
 # runc
 FROM golang:1.20-alpine3.16 AS runc
-ARG RUNC_VERSION=v1.1.11
+ARG RUNC_VERSION=v1.1.7
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
 	git clone -c 'advice.detachedHead=false' --depth=1 --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
