@@ -93,6 +93,8 @@ tar2: .podman-from-container2
 	cp README.md $(BUILD_DIR)/
 	curl -fsSL -o catatonit https://github.com/openSUSE/catatonit/releases/latest/download/catatonit.x86_64
 	chmod a+x catatonit
+	curl -fsSL -o netavark.gz https://github.com/containers/netavark/releases/latest/download/netavark.gz
+	gunzip netavark.gz && chmod a+x netavark
 	set -e; \
 	CONTAINER=`$(DOCKER) create $(PODMAN_IMAGE)`; \
 	for BINARY in podman crun runc fusermount3 fuse-overlayfs slirp4netns; do \
@@ -102,6 +104,7 @@ tar2: .podman-from-container2
 	$(DOCKER) cp $$CONTAINER:/usr/libexec/cni $(BUILD_DIR)/usr/libexec/cni; \
 	$(DOCKER) rm $$CONTAINER
 	cp catatonit $(BUILD_DIR)/usr/libexec/podman/
+	cp netavark $(BUILD_DIR)/usr/libexec/podman/
 
 signed-tar: tar .gpg
 	@echo Running gpg signing container with GPG_SIGN_KEY and GPG_SIGN_KEY_PASSPHRASE
