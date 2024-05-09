@@ -1,19 +1,16 @@
 # runc
-FROM golang:1.20-alpine3.16 AS runc
+FROM golang:1.21-alpine3.18 AS runc
 ARG RUNC_VERSION=v1.1.12
 RUN set -eux; \
-	apk add --no-cache --virtual .build-deps gcc musl-dev libseccomp-dev libseccomp-static make git bash; \
-	git clone -c 'advice.detachedHead=false' --depth=1 --branch ${RUNC_VERSION} https://github.com/opencontainers/runc src/github.com/opencontainers/runc; \
-	cd src/github.com/opencontainers/runc; \
-	make static BUILDTAGS='seccomp selinux ambient'; \
-	mv runc /usr/local/bin/runc; \
-	rm -rf $GOPATH/src/github.com/opencontainers/runc; \
-	apk del --purge .build-deps; \
-	[ "$(ldd /usr/local/bin/runc | wc -l)" -eq 0 ] || (ldd /usr/local/bin/runc; false)
+	ARCH="`uname -m | sed 's!x86_64!amd64!; s!aarch64!arm64!'`"; \
+	wget -O /usr/local/bin/runc https://github.com/opencontainers/runc/releases/download/$RUNC_VERSION/runc.$ARCH; \
+	chmod +x /usr/local/bin/runc; \
+	runc --version; \
+	! ldd /usr/local/bin/runc
 
 
 # podman build base
-FROM golang:1.20-alpine3.16 AS podmanbuildbase
+FROM golang:1.21-alpine3.18 AS podmanbuildbase
 RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
