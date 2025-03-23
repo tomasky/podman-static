@@ -10,7 +10,7 @@ RUN set -eux; \
 
 
 # podman build base
-FROM golang:1.21-alpine3.18 AS podmanbuildbase
+FROM golang:1.23-alpine AS podmanbuildbase
 RUN apk add --update --no-cache git make gcc pkgconf musl-dev \
 	btrfs-progs btrfs-progs-dev libassuan-dev lvm2-dev device-mapper \
 	glib-static libc-dev gpgme-dev protobuf-dev protobuf-c-dev \
