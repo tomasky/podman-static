@@ -9,7 +9,9 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 (ubuntu-latest) sets kernel.apparmor_restrict_unprivileged_userns=1,
+    # which makes the rootless podman re-exec fail with "failed to reexec: Permission denied".
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Check out code

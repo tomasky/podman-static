@@ -53,12 +53,13 @@ make tar
 make install INSTALL_ROOT="$HOME/.local/podman"
 ```
 
-The `pym3/bin/pods` wrapper can perform the same installation and generates an
-environment file. Set `PODMAN_HOME` before running it to use another root:
+The `pym3/bin/pods` wrapper can perform the same installation and adds the
+environment file to `~/.bashrc`. Set `PODMAN_HOME` before running it to use
+another root:
 
 ```sh
 PODMAN_HOME="$HOME/.local/podman" pods setup rootless
-source "$PODMAN_HOME/env.bash"
+source "$PODMAN_HOME/podman-env.bash"
 podman run alpine:3.24 echo hello
 ```
 
@@ -82,6 +83,20 @@ For a conventional system installation, inspect the archive first:
 tar -xzf build/podman-linux-amd64.tar.gz
 sudo cp -r podman-linux-amd64/usr podman-linux-amd64/etc /
 ```
+
+## Verifying release archives
+
+Archives are signed with a detached GPG signature when a `v*` tag is pushed.
+The signing key is
+`63C9 CD49 F148 8163 5D7A  E751 2C27 6C85 7877 3B18`:
+
+```sh
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 63C9CD49F14881635D7AE7512C276C8578773B18
+gpg --batch --verify podman-linux-amd64.tar.gz.asc podman-linux-amd64.tar.gz
+```
+
+`make verify-signature` performs the same check on the archive under `build/`.
+Set `GPG_KEY_ID` to verify an archive signed by a different key.
 
 ## Local build and test
 

@@ -18,7 +18,9 @@ env:
 
 jobs:
   push:
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04 (ubuntu-latest) sets kernel.apparmor_restrict_unprivileged_userns=1,
+    # which makes the rootless podman re-exec fail with "failed to reexec: Permission denied".
+    runs-on: ubuntu-22.04
     if: github.event_name == 'push'
 
     steps:
@@ -28,9 +30,15 @@ jobs:
     - name: Build & Test
       run: make images test
 
+    # Mirrors upstream: the archive is only signed when it is actually released,
+    # so a plain push to master needs no GPG secrets.
+    - name: Build archive
+      if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      run: make tar
+
     - name: Build signed archive
+      if: startsWith(github.ref, 'refs/tags/')
       run: make signed-tar
-     
       env:
         GPG_SIGN_KEY: ${{ secrets.GPG_SIGN_KEY }}
         GPG_SIGN_KEY_PASSPHRASE: ${{ secrets.GPG_SIGN_KEY_PASSPHRASE }}
@@ -68,3 +76,14 @@ jobs:
         asset_path: ./build/podman-linux-amd64.tar.gz
         asset_name: podman-linux-amd64.tar.gz
         asset_content_type: application/octet-stream
+
+    - name: Upload amd64 signature
+      if: github.ref != 'refs/heads/master'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/podman-linux-amd64.tar.gz.asc
+        asset_name: podman-linux-amd64.tar.gz.asc
+        asset_content_type: application/pgp-signature

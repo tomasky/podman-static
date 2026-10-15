@@ -1,5 +1,0 @@
-# Podman 6 static bundles follow the upstream amd64/arm64 build. The old
-# i386-specific dependency set was removed upstream and must not silently
-# produce a stale Podman binary.
-FROM alpine:3.24
-RUN echo >&2 'Dockerfilex86 is unsupported; build Dockerfile with PLATFORM=linux/amd64 or linux/arm64' && exit 1

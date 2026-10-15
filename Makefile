@@ -13,6 +13,9 @@ PODMAN_MINIMAL_BUILD_OPTS ?= -t $(PODMAN_MINIMAL_IMAGE)
 PODMAN_REMOTE_BUILD_OPTS ?= -t $(PODMAN_REMOTE_IMAGE)
 
 GPG_IMAGE = gpg-signer
+# Fingerprint checked by `verify-signature`. Override it when the archive is
+# signed with a fork-specific key: make verify-signature GPG_KEY_ID=<fingerprint>
+GPG_KEY_ID ?= 63C9CD49F14881635D7AE7512C276C8578773B18
 
 BUILD_DIR ?= ./build
 INSTALL_ROOT ?= $(HOME)/.local/podman
@@ -143,7 +146,7 @@ verify-signature:
 			TMPDIR=$$(mktemp -d); \
 			export GNUPGHOME=$$TMPDIR; \
 			gpg --keyserver hkps://keyserver.ubuntu.com \
-				--recv-keys 0CCF102C4F95D89E583FF1D4F8B5AF50344BB503 && \
+				--recv-keys $(GPG_KEY_ID) && \
 			gpg --batch --verify "$(BUILD_DIR)/$(ASSET_NAME).tar.gz.asc" \
 				"$(BUILD_DIR)/$(ASSET_NAME).tar.gz" && \
 			rm -rf $$TMPDIR && exit 0 || \

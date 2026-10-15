@@ -23,7 +23,7 @@ echo
 echo
 echo TEST ${TEST_PREDICATE} PODMAN AS UNPRIVILEGED USER WITH NON-DEFAULT UID '(no uid/gid mapping)'
 echo
-(set -x; docker run --rm --privileged --user 9000:9000 \
+(set -x; docker run --rm --privileged --user 9000:9000 -e HOME=/tmp \
 	"${IMAGE}" \
 	docker run --rm alpine:3.24 wget -O /dev/null http://example.org)
 
