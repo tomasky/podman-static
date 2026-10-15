@@ -5,13 +5,13 @@ cd "$(dirname $0)"
 set -eu
 
 echo
-echo TEST PODMAN AS ROOT - NETWORKING '(using CNI)'
+echo TEST PODMAN AS ROOT - NETWORKING '(using Netavark/pasta)'
 echo
 (set -x; docker run --rm --privileged --entrypoint /bin/sh \
 	-u root:root \
 	-v "`pwd`/storage/root":/var/lib/containers/storage \
 	"${IMAGE}" \
-	-c 'podman run --rm alpine:3.12 wget -O /dev/null http://example.org')
+	-c 'podman run --rm alpine:3.24 wget -O /dev/null http://example.org')
 
 echo
 echo TEST PODMAN DOCKERFILE BUILD AS ROOT
@@ -22,7 +22,7 @@ echo
 	"${IMAGE}" \
 	-c 'set -e;
 		podman build -t podmantestimage -f - . <<-EOF
-			FROM alpine:latest
+			FROM alpine:3.24
 			RUN echo hello world > /hello
 			CMD ["/bin/cat", "/hello"]
 		EOF')

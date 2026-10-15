@@ -1,99 +1,94 @@
-# podman binaries and container images ![GitHub workflow badge](https://github.com/mgoltzsche/podman-static/workflows/Release/badge.svg)
+# podman-static
 
-This project provides alpine-based podman container images and statically linked (rootless) podman binaries for linux-amd64 along with its dependencies _(without systemd support)_:
+Alpine-based Podman images and statically linked Podman binaries for Linux
+amd64 and arm64. The dependency set follows the current upstream
+`mgoltzsche/podman-static` build and uses Podman 6's Netavark/pasta networking
+stack.
 
-- [podman](https://github.com/containers/podman)
-- [runc](https://github.com/opencontainers/runc/) or [crun](https://github.com/containers/crun)
-- [conmon](https://github.com/containers/conmon)
-- [fuse-overlayfs](https://github.com/containers/fuse-overlayfs) and [libfuse](https://github.com/libfuse/libfuse)
-- [slirp4netns](https://github.com/rootless-containers/slirp4netns) (with [libslirp](https://gitlab.freedesktop.org/slirp/libslirp))
-- [CNI plugins](https://github.com/containernetworking/plugins): loopback, bridge, host-local, portmap
+## Bundled dependency versions
+
+| Component | Version |
+| --- | --- |
+| Podman | v6.1.4 |
+| Go / Alpine | 1.27 / 3.24 |
+| Rust | 1.98 |
+| runc | v1.5.2 |
+| conmon | v2.2.1 |
+| crun | 1.30.1 |
+| Netavark / aardvark-dns | v2.1.0 |
+| pasta | 2026_10_02.cba3570 |
+| libfuse / fuse-overlayfs | fuse-3.18.3 / v1.18 |
+| catatonit | v0.2.1 |
+
+Podman 6 no longer uses the old CNI/slirp4netns bundle here. The old i386
+`Dockerfilex86` entry is intentionally fail-fast; build `Dockerfile` with
+`PLATFORM=linux/amd64` or `PLATFORM=linux/arm64` instead.
 
 ## Container image
 
-The following image tags are supported:
+The image tags are:
 
-| Tag                            | Description                                                                                                               |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| `latest`, `<VERSION>`          | podman with both rootless and rootful dependencies: runc, conmon, fuse-overlayfs, slirp4netns, CNI plugins.               |
-| `minimal`, `<VERSION>-minimal` | podman, crun, fuse-overlayfs and conmon binaries, configured to use the host's existing namespaces (low isolation level). |
-| `remote`, `<VERSION>-remote`   | the podman remote binary.                                                                                                 |
+| Tag | Description |
+| --- | --- |
+| `latest`, `<VERSION>` | Podman with rootful and rootless dependencies, including runc, crun, conmon, fuse-overlayfs, Netavark, pasta and aardvark-dns. |
+| `minimal`, `<VERSION>-minimal` | Podman, crun, fuse-overlayfs and conmon, configured for host namespaces and disabled cgroups. |
+| `remote`, `<VERSION>-remote` | The statically linked Podman remote client. |
 
-By default containers are run as user `root`.
-However the `podman` (uid/gid 1000) user can be used instead for which also a subuid/gid mapping is configured with the image (as described within the binary installation section below).
-
-Please note that, when running non-remote podman within a docker container, the docker container needs to be `--privileged`.
-
-### Container usage example
-
-Run podman in docker:
+Run Podman in a container:
 
 ```sh
-docker run --privileged -u podman:podman mgoltzsche/podman:minimal docker run alpine:latest echo hello from nested container
+docker run --privileged -u podman:podman \
+  mgoltzsche/podman:minimal docker run alpine:3.24 echo hello
 ```
 
-_Within the container `docker` is linked to `podman` to support applications that use the `docker` command._
+Non-remote Podman inside a container requires `--privileged`.
 
-## Binary installation on a host
+## Private host installation
 
-Download the statically linked binaries of podman and its dependencies:
+The archive contains all bundled executables and configuration files. Install
+it below a private root instead of copying files into `/usr` or `/etc`:
 
 ```sh
-curl -fsSL -o podman-linux-amd64.tar.gz https://github.com/tomasky/podman-static/releases/latest/download/podman-linux-amd64.tar.gz
+make tar
+make install INSTALL_ROOT="$HOME/.local/podman"
 ```
 
-Verify the archive's signature (optional):
+The `pym3/bin/pods` wrapper can perform the same installation and generates an
+environment file. Set `PODMAN_HOME` before running it to use another root:
 
 ```sh
-curl -fsSL -o podman-linux-amd64.tar.gz.asc https://github.com/mgoltzsche/podman-static/releases/latest/download/podman-linux-amd64.tar.gz.asc
-gpg --keyserver ha.pool.sks-keyservers.net --recv-keys 0CCF102C4F95D89E583FF1D4F8B5AF50344BB503
-gpg --batch --verify podman-linux-amd64.tar.gz.asc podman-linux-amd64.tar.gz
+PODMAN_HOME="$HOME/.local/podman" pods setup rootless
+source "$PODMAN_HOME/env.bash"
+podman run alpine:3.24 echo hello
 ```
 
-_This may fail every now and then due to desync/unavailable key servers. In that case please retry._
+The private root contains binaries, configs, image/container storage, runtime
+state, temporary files and registry authentication data. Podman configuration
+is selected with the documented `CONTAINERS_CONF`,
+`CONTAINERS_STORAGE_CONF`, `CONTAINERS_REGISTRIES_CONF`, `XDG_DATA_HOME`,
+`XDG_RUNTIME_DIR` and `TMPDIR` variables.
 
-Install the binaries and configuration on your host after you've inspected the archive:
+Rootless setup checks for `unshare`, `newuidmap` and `newgidmap`. If a required
+tool is absent, Bash asks before running `sudo apt-get install -y util-linux
+uidmap`. It separately asks before appending the requested `100000:65536`
+entries to `/etc/subuid` and `/etc/subgid`; refusal or a failed verification
+stops setup.
+
+## System-wide installation (not recommended for private deployments)
+
+For a conventional system installation, inspect the archive first:
 
 ```sh
-tar -xzf podman-linux-amd64.tar.gz
+tar -xzf build/podman-linux-amd64.tar.gz
 sudo cp -r podman-linux-amd64/usr podman-linux-amd64/etc /
-sudo apt-get install util-linux uidmap # ubuntu dist
 ```
 
-_If you have docker installed on the same host it will be broken until you remove the newly installed `/usr/local/bin/runc` binary since docker is not compatible with the latest runc version provided here while podman is also compatible with the older runc version that comes with docker._
-
-In order to run [rootless](https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md) containers that use multiple uids/gids you may want to set up a uid/gid mapping for your user on your host:
-
-```
-sudo sh -c "echo $(id -un):100000:65536 >> /etc/subuid"
-sudo sh -c "echo $(id -gn):100000:65536 >> /etc/subgid"
-bash rootless.bash
-```
-
-_Please make sure you don't add the mapping multiple times._
-
-To support applications that use the `docker` command you may want to link it to `podman` as follows:
+## Local build and test
 
 ```sh
-sudo ln -s /usr/local/bin/podman /usr/local/bin/docker
-```
-
-### Binary usage example
-
-```sh
-podman run alpine:latest echo hello from podman
-```
-
-## Default persistent storage location
-
-The default storage location depends on the user:
-
-- For `root` storage is located at `/var/lib/containers/storage`.
-- For unprivileged users storage is located at `~/.local/share/containers/storage`.
-
-## Local build & test
-
-```sh
-make
+make images
 make test
 ```
+
+Use `PLATFORM=linux/arm64` for an arm64 bundle. Docker Buildx is required for
+the build targets.

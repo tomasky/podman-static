@@ -23,13 +23,13 @@ jobs:
 
     steps:
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    #- name: Build & Test
-    #  run:  make podman podman-minimal podman-remote 
+    - name: Build & Test
+      run: make images test
 
     - name: Build signed archive
-      run: make tar  
+      run: make signed-tar
      
       env:
         GPG_SIGN_KEY: ${{ secrets.GPG_SIGN_KEY }}

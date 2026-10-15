@@ -22,7 +22,7 @@ sleep 5
 set -eu
 docker run --rm --network=host -v "$(pwd):/build" \
 	"${PODMAN_REMOTE_IMAGE}" \
-	podman --url=tcp://$ADDRESS run alpine:3.12 echo hello from remote container
+	podman --url=tcp://$ADDRESS run alpine:3.24 echo hello from remote container
 
 # ATTENTION: podman remote doesn't handle errors properly: https://github.com/containers/podman/issues/7137
 docker run --rm --network=host \
@@ -31,7 +31,7 @@ docker run --rm --network=host \
 	sh -c "set -ex; \
 		podman --log-level=debug --remote --url=tcp://$ADDRESS build -t testbuild -f /build/Dockerfile /build; \
 		podman --url=tcp://$ADDRESS run testbuild echo hello from remote container"
-# ATTENTION: volume mounts don't work (using podman 2.0.4)
+# ATTENTION: volume mounts are intentionally not covered here.
 #docker run --rm --network=host \
 #	-v "`pwd`:/build" \
 #	"${PODMAN_REMOTE_IMAGE}" \
