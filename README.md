@@ -53,12 +53,16 @@ make tar
 make install INSTALL_ROOT="$HOME/.local/podman"
 ```
 
-The `pym3/bin/pods` wrapper can perform the same installation and adds the
+```sh
+npm i -g podms
+podms --help
+```
+Then the `podms`  wrapper can perform the same installation and adds the
 environment file to `~/.bashrc`. Set `PODMAN_HOME` before running it to use
 another root:
 
 ```sh
-PODMAN_HOME="$HOME/.local/podman" pods setup rootless
+PODMAN_HOME="$HOME/.local/podman" podms setup rootless
 source "$PODMAN_HOME/podman-env.bash"
 podman run alpine:3.24 echo hello
 ```
