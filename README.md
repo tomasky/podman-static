@@ -9,9 +9,9 @@ stack.
 
 | Component | Version |
 | --- | --- |
-| Podman | v6.1.4 |
+| Podman | v6.2.0 |
 | Go / Alpine | 1.27 / 3.24 |
-| Rust | 1.98 |
+| Rust | 1.99 |
 | runc | v1.5.2 |
 | conmon | v2.2.1 |
 | crun | 1.30.1 |

@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-PODMAN_VERSION ?= v6.1.4
+PODMAN_VERSION ?= v6.2.0
 PODMAN_IMAGE_NAME ?= mgoltzsche/podman
 PODMAN_IMAGE ?= $(PODMAN_IMAGE_NAME):latest
 PODMAN_IMAGE_TARGET ?= podmanall
