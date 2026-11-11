@@ -31,17 +31,39 @@ The image tags are:
 | Tag | Description |
 | --- | --- |
 | `latest`, `<VERSION>` | Podman with rootful and rootless dependencies, including runc, crun, conmon, fuse-overlayfs, Netavark, pasta and aardvark-dns. |
-| `minimal`, `<VERSION>-minimal` | Podman, crun, fuse-overlayfs and conmon, configured for host namespaces and disabled cgroups. |
+| `minimal`, `<VERSION>-minimal` | Podman, crun, fuse-overlayfs and conmon, configured to use the host's existing namespaces and cgroups (low isolation level). |
 | `remote`, `<VERSION>-remote` | The statically linked Podman remote client. |
 
-Run Podman in a container:
+Non-remote Podman inside a container requires the parent container to run with
+`--device=/dev/fuse`.
+
+### Container usage examples
+
+Run Podman in Docker (or Podman):
 
 ```sh
-docker run --privileged -u podman:podman \
+docker run --device=/dev/fuse -u podman:podman \
   mgoltzsche/podman:minimal docker run alpine:3.24 echo hello
 ```
 
-Non-remote Podman inside a container requires `--privileged`.
+Within the container `docker` is linked to `podman` to support applications that
+use the `docker` command.
+
+To allow the container to write to a shared volume using your host UID, add the
+`--userns=keep-id` option.
+
+To build images within a nested container, mount a volume at the storage
+directory, e.g. `--tmpfs /podman/.local/share/containers/storage:mode=1777`.
+This is because fuse-overlayfs file systems cannot be nested.
+
+If the nested containers need stronger isolation, use the regular (non-minimal)
+Podman image and sacrifice the outer container's isolation by running it in
+`--privileged` mode:
+
+```sh
+docker run --privileged -u podman:podman \
+  mgoltzsche/podman:latest docker run alpine:3.24 echo hello
+```
 
 ## Private host installation
 
